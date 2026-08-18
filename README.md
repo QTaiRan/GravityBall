@@ -1,4 +1,4 @@
-# BALL BLASTER - STM32F103C8T6 重力感应平衡球游戏
+# BALL BLASTER - STM32F103C6T6 重力感应平衡球游戏
 
 用 MPU6050 重力感应控制小球躲避障碍物的 OLED 小游戏。
 倾斜开发板 = 小球滚动方向，4x4 矩阵键盘操作菜单和辅助微调，无源蜂鸣器播放音效。
@@ -10,8 +10,8 @@
 | OLED SSD1315 (I2C) | SCK (=SCL) | **PB6** | 0.96 寸 128x64，纯 I2C 模块，地址 0x3C |
 | | SDA | **PB7** | |
 | | VDD/GND | 3.3V / GND | |
-| MPU6050 (10DOF) | SCL | **PB10** | 10DOF 模块加速度计部分 |
-| | SDA | **PB11** | |
+| MPU6050 (10DOF) | SCL | **PB6** | 与 OLED 共用 I2C1 总线（地址 0x68 ≠ 0x3C） |
+| | SDA | **PB7** | |
 | | VCC_IN/GND | 5V(或3.3V) / GND | 板载 LDO 稳压，注意共地 |
 | | 3.3V/FSYNC/INTA/DRDY | 悬空 | 不需要连接 |
 | 无源蜂鸣器 | IN | **PA0** (TIM2_CH1) | 9012 三极管驱动，PWM 2k-5kHz |
@@ -60,7 +60,7 @@
 
 ## 常见问题
 
-- **开机显示 MPU6050 ERR**：检查 VCC_IN 是否供电（建议 5V）、SCL/SDA 是否接在 PB10/PB11、是否与开发板共地
+- **开机显示 MPU6050 ERR**：检查 VCC_IN 是否供电（建议 5V）、SCL/SDA 是否接在 PB6/PB7（与 OLED 并联）、是否与开发板共地
 - **屏幕不亮**：OLED 模块一般默认地址 0x3C；若为 0x3D，改 `Core/Inc/ssd1315.h` 中 `OLED_I2C_ADDR`
 - **画面方向反了**：改 `Core/Src/ssd1315.c` 初始化中的 `0xA1`/`0xC8`（`0xA0`/`0xC0` 反向）
 - **蜂鸣器不响**：确认是无源蜂鸣器（有源蜂鸣器不适用），检查 PA0 到 9012 基极的接线
@@ -83,6 +83,6 @@ Core/Src/
 ## 说明
 
 - 所有外设初始化都写在 `main.c` 的 USER CODE 区内，与 CubeMX 生成代码兼容；
-  `GravityBall.ioc` 已同步配置好 I2C1/I2C2/TIM2/键盘引脚，如需在 CubeMX 里改引脚，
+  `GravityBall.ioc` 已同步配置好 I2C1/TIM2/键盘引脚，如需在 CubeMX 里改引脚，
   生成后把 `MX_I2C1_Init` 等改名或删掉旧的 `App_*_Init` 即可。
 - 未使用的硬件（W25Q128、DHT11、HMC5883L、BMP180、额外 LED）已预留 I2C/SPI 总线，可自行扩展

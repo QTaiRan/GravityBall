@@ -53,8 +53,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-extern I2C_HandleTypeDef hi2c1;   /* OLED SSD1315 */
-extern I2C_HandleTypeDef hi2c2;   /* MPU6050     */
+extern I2C_HandleTypeDef hi2c1;   /* OLED + MPU6050 (共享 I2C1) */
 extern TIM_HandleTypeDef htim2;   /* Buzzer PWM  */
 /* USER CODE END EFP */
 

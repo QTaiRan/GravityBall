@@ -1,7 +1,7 @@
 /**
   ******************************************************************************
   * @file    mpu6050.c
-  * @brief   MPU6050 driver (I2C2) - accelerometer tilt sensing for the game
+  * @brief   MPU6050 driver (I2C1, shared with OLED) - accelerometer tilt sensing for the game
   ******************************************************************************
   */
 #include "mpu6050.h"
