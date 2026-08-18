@@ -46,8 +46,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-I2C_HandleTypeDef hi2c1;   /* OLED SSD1315 (PB6=SCL PB7=SDA) */
-I2C_HandleTypeDef hi2c2;   /* MPU6050     (PB10=SCL PB11=SDA) */
+I2C_HandleTypeDef hi2c1;   /* OLED (PB6=SCL PB7=SDA) + MPU6050, 同一条总线 */
 TIM_HandleTypeDef htim2;   /* Buzzer PWM  (PA0=TIM2_CH1)      */
 /* USER CODE END PV */
 
@@ -56,7 +55,6 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 /* USER CODE BEGIN PFP */
 static void App_I2C1_Init(void);
-static void App_I2C2_Init(void);
 static void App_TIM2_Init(void);
 /* USER CODE END PFP */
 
@@ -68,10 +66,7 @@ static void App_I2C_GPIO_Init(I2C_HandleTypeDef *hi2c,
   GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   __HAL_RCC_GPIOB_CLK_ENABLE();
-  if (hi2c->Instance == I2C1)
-    __HAL_RCC_I2C1_CLK_ENABLE();
-  else
-    __HAL_RCC_I2C2_CLK_ENABLE();
+  __HAL_RCC_I2C1_CLK_ENABLE();
 
   GPIO_InitStruct.Pin = scl_pin | sda_pin;
   GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
@@ -92,24 +87,6 @@ static void App_I2C1_Init(void)
   hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
   App_I2C_GPIO_Init(&hi2c1, GPIO_PIN_6, GPIO_PIN_7);   /* PB6 SCL, PB7 SDA */
   if (HAL_I2C_Init(&hi2c1) != HAL_OK)
-  {
-    Error_Handler();
-  }
-}
-
-static void App_I2C2_Init(void)
-{
-  hi2c2.Instance = I2C2;
-  hi2c2.Init.ClockSpeed = 400000;
-  hi2c2.Init.DutyCycle = I2C_DUTYCYCLE_2;
-  hi2c2.Init.OwnAddress1 = 0;
-  hi2c2.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
-  hi2c2.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
-  hi2c2.Init.OwnAddress2 = 0;
-  hi2c2.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
-  hi2c2.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
-  App_I2C_GPIO_Init(&hi2c2, GPIO_PIN_10, GPIO_PIN_11); /* PB10 SCL, PB11 SDA */
-  if (HAL_I2C_Init(&hi2c2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -186,8 +163,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
-  App_I2C1_Init();    /* OLED */
-  App_I2C2_Init();    /* MPU6050 */
+  App_I2C1_Init();    /* OLED + MPU6050 (same bus, PB6/PB7) */
   App_TIM2_Init();    /* buzzer PWM */
   buzzer_init();
   game_init();        /* OLED init + MPU + keypad + game */
