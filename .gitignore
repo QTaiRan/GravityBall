@@ -1,0 +1,19 @@
+# Build output
+Debug/
+Release/
+
+# STM32CubeIDE settings (machine-local)
+.settings/
+
+# Object/listing files
+*.o
+*.d
+*.lst
+*.map
+*.su
+
+# Binaries
+*.elf
+*.hex
+*.bin
+*.axf
